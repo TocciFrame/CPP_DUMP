@@ -9,7 +9,7 @@ class BST {
 	bool search(node* curr, int num){
 	    if (curr == nullptr){
 	        return false;
-	    }
+	    }	
 	    
 	    if (num == curr->elem){
 	        return true;
