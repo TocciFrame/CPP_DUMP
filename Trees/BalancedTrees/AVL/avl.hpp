@@ -45,7 +45,7 @@ class AVL : public List {
             curr->right = insert(curr->right, num);
         }
 
-        curr =restructure(curr);
+        curr = restructure(curr);
 
         // curr->updateHeight(curr);
         // int balanceFactor = curr->getBalanceFactor(curr);
@@ -103,6 +103,7 @@ class AVL : public List {
                 }
                 curr->elem = temp->elem;
                 curr->right = remove(curr->right, temp->elem);
+                size--;
             }
         }
 
