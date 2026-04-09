@@ -17,7 +17,14 @@ struct node {
     }
 
     int getHeight(node* n) {
-        return n ? n->height : -1;
+        // return n ? n->height : -1;
+
+        if (n) {
+            return n->height;
+        } else {
+            return -1;
+        }
+
     }
 
     int getBalanceFactor(node* n) {
@@ -25,17 +32,22 @@ struct node {
     }
 
     void updateHeight(node* n) {
-        int left = getHeight(n->left);
-        int right = getHeight(n->right);
-        if (n) {
-            n->height = 1 + max(left, right);
-        }
+        if (!n) return;
+        n->height = 1 + max(getHeight(n->left), getHeight(n->right));
     }
+
+    // void updateHeight() {
+
+    //     int left = getHeight(this->left);
+    //     int right = getHeight(this->right);
+    //     this->height = 1 + max(left, right);
+
+    // }
 
     node* rotateRight(node* y) { 
         node* x = y->left;
         node* T3 = x->right;
-
+        
         x->right = y;
         y->left = T3;
 

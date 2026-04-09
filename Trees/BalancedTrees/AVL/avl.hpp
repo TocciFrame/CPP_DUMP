@@ -5,12 +5,29 @@ class AVL : public List {
     node* root;
     int size;
 
-    node* insert(node* curr, int num) {
-        if (!root) {
-            root = new node(num);
-            size++;
-            return root;
+    node* restructure(node* z) {
+        z->updateHeight(z);
+        int balanceFactor = z->getBalanceFactor(z);
+
+        if (balanceFactor > 1) {
+            if (z->left->getBalanceFactor(z->left) >= 0) {
+                return z->rotateRight(z); // ZR
+            } else {
+                z->left = z->rotateLeft(z->left); // ZZR
+                return z->rotateRight(z);
+            }
+        } else if (balanceFactor < -1) {
+            if (z->right->getBalanceFactor(z->right) <= 0) {
+                return z->rotateLeft(z);
+            } else {
+                z->right = z->rotateRight(z->right);
+                return z->rotateLeft(z);
+            }
         }
+        return z;
+    }
+
+    node* insert(node* curr, int num) {
 
         if (!curr) {
             node* newNode = new node(num);
@@ -28,24 +45,28 @@ class AVL : public List {
             curr->right = insert(curr->right, num);
         }
 
-        curr->updateHeight(curr);
-        int balanceFactor = curr->getBalanceFactor(curr);
+        curr =restructure(curr);
 
-        if (balanceFactor > 1) {
-            if (num < curr->left->elem) {
-                return curr->rotateRight(curr);
-            } else {
-                curr->left = curr->rotateLeft(curr->left);
-                return curr->rotateRight(curr);
-            }
-        } else if (balanceFactor < -1) {
-            if (num > curr->right->elem) {
-                return curr->rotateLeft(curr);
-            } else {
-                curr->right = curr->rotateRight(curr->right);
-                return curr->rotateLeft(curr);
-            }
-        }
+        // curr->updateHeight(curr);
+        // int balanceFactor = curr->getBalanceFactor(curr);
+
+
+        // // Rotations
+        // if (balanceFactor > 1) {
+        //     if (num < curr->left->elem) {
+        //         return curr->rotateRight(curr); // ZR
+        //     } else {
+        //         curr->left = curr->rotateLeft(curr->left); // ZZR
+        //         return curr->rotateRight(curr);
+        //     }
+        // } else if (balanceFactor < -1) {
+        //     if (num > curr->right->elem) {
+        //         return curr->rotateLeft(curr);
+        //     } else {
+        //         curr->right = curr->rotateRight(curr->right);
+        //         return curr->rotateLeft(curr);
+        //     }
+        // }
 
         return curr;
     }
@@ -73,6 +94,7 @@ class AVL : public List {
                     node* toDelete = curr;
                     curr = temp;
                     delete toDelete;
+                    size--;
                 }
             } else {
                 node* temp = curr->right;
@@ -85,25 +107,26 @@ class AVL : public List {
         }
 
         if (!curr) return nullptr;
+        curr = restructure(curr);
 
-        curr->updateHeight(curr);
-        int balanceFactor = curr->getBalanceFactor(curr);
+        // curr->updateHeight(curr);
+        // int balanceFactor = curr->getBalanceFactor(curr);
 
-        if (balanceFactor > 1) {
-            if (curr->left->getBalanceFactor(curr->left) >= 0) {
-                return curr->rotateRight(curr);
-            } else {
-                curr->left = curr->rotateLeft(curr->left);
-                return curr->rotateRight(curr);
-            }
-        } else if (balanceFactor < -1) {
-            if (curr->right->getBalanceFactor(curr->right) <= 0) {
-                return curr->rotateLeft(curr);
-            } else {
-                curr->right = curr->rotateRight(curr->right);
-                return curr->rotateLeft(curr);
-            }
-        }
+        // if (balanceFactor > 1) {
+        //     if (curr->left->getBalanceFactor(curr->left) >= 0) {
+        //         return curr->rotateRight(curr);
+        //     } else {
+        //         curr->left = curr->rotateLeft(curr->left);
+        //         return curr->rotateRight(curr);
+        //     }
+        // } else if (balanceFactor < -1) {
+        //     if (curr->right->getBalanceFactor(curr->right) <= 0) {
+        //         return curr->rotateLeft(curr);
+        //     } else {
+        //         curr->right = curr->rotateRight(curr->right);
+        //         return curr->rotateLeft(curr);
+        //     }
+        // }
 
         return curr;
     }
@@ -128,21 +151,15 @@ class AVL : public List {
     }
 
     bool insert(int num) {
-        node* result = insert(root, num);
-        if (result) {
-            root = result;
-            return true;
-        }
-        return false;
+        int prevSize = size;
+        root = insert(root, num);
+        return size > prevSize;
     }
 
     bool remove(int num) {
-        node* result = remove(root, num);
-        if (result) {
-            root = result;
-            return true;
-        }
-        return false;
+        int prevSize = size;
+        root = remove(root, num);
+        return size < prevSize;
     }
 
     bool search(int num) {
